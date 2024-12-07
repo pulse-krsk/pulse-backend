@@ -15,12 +15,12 @@ http:
   max_memory: 1024000
 
 java_service:
-  host: '192.168.1.148'
+  host: 'backend-java' # 192.168.1.148/backend-java
   port: '8081'
 
 postgresql:
   username: 'postgres'
   password: 'postgres'
-  host: 'localhost' # localhost/postgresql
+  host: 'postgres' # localhost/postgres
   port: '5432'     # 30000/5432
   database: 'pulsdb'

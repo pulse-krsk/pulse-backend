@@ -3,6 +3,7 @@ package v1
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/kurochkinivan/pulskrsk/config"
 	"github.com/kurochkinivan/pulskrsk/internal/usecase"
@@ -21,16 +22,16 @@ type Handler interface {
 func NewRouter(cfg *config.Config, a usecase.Auth, u usecase.User) error {
 	mux := http.NewServeMux()
 
-	// proxyURL := &url.URL{
-	// 	Scheme: "http",
-	// 	Host:   fmt.Sprintf("%s:%s", cfg.JavaService.Host, cfg.JavaService.Port),
-	// }
+	proxyURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.JavaService.Host, cfg.JavaService.Port),
+	}
 
 	authHandler := NewAuthHandler(a, cfg.BytesLimit, cfg.JWTSignKey)
 	authHandler.Register(mux)
 
-	// proxyHandler := NewProxyHandler(proxyURL)
-	// proxyHandler.Register(mux)
+	proxyHandler := NewProxyHandler(proxyURL)
+	proxyHandler.Register(mux)
 
 	userHandler := NewUserHandler(u, cfg.BytesLimit, cfg.JWTSignKey)
 	userHandler.Register(mux)

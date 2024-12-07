@@ -23,7 +23,7 @@ func NewEventHandler(maxMemory int64) *eventHandler {
 }
 
 func (h *eventHandler) Register(mux *http.ServeMux) {
-	mux.HandleFunc(fmt.Sprintf("%s %s", http.MethodPost, baseEventPath), errMdw(logMdw(h.saveFile)))
+	mux.HandleFunc(fmt.Sprintf("%s %s/create/", http.MethodPost, baseEventPath), errMdw(logMdw(h.saveFile)))
 }
 
 func (h *eventHandler) saveFile(w http.ResponseWriter, r *http.Request) error {

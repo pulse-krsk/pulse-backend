@@ -8,16 +8,16 @@ volumes:
 
 
 services:
-  # backend-go:
-  #   build:
-  #     dockerfile: Dockerfile
-  #   networks:
-  #     - app
-  #   ports:
-  #     - 8080:8080
-  #   depends_on:
-  #     - postgres
-  #     - backend-java
+  backend-go:
+    build:
+      dockerfile: Dockerfile
+    networks:
+      - app
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+      - backend-java
 
 
   backend-java:
