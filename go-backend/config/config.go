@@ -11,30 +11,38 @@ import (
 type Config struct {
 	Environment string `yaml:"environment" env:"ENVIRONMENT" env-required:"true"`
 
-	Auth
+	Auth        `yaml:"auth"`
+	JavaService `yaml:"java_service"`
+	HTTP        `yaml:"http"`
+	PostgreSQL  `yaml:"postgresql"`
+}
 
-	HTTP struct {
-		Host         string        `yaml:"host" env:"HTTP_HOST" env-required:"true"`
-		Port         string        `yaml:"port" env:"HTTP_PORT" env-required:"true"`
-		ReadTimeout  time.Duration `yaml:"read_timeout" env:"HTTP_READ_TIMEOUT" env-required:"true"`
-		WriteTimeout time.Duration `yaml:"write_timeout" env:"HTTP_WRITE_TIMEOUT" env-required:"true"`
-		IdleTimeout  time.Duration `yaml:"idle_timeout" env:"HTTP_IDLE_TIMEOUT" env-required:"true"`
-		BytesLimit   int64         `yaml:"bytes_limit" env:"HTTP_BYTES_LIMIT" env-required:"true"`
-	} `yaml:"http"`
+type PostgreSQL struct {
+	Host     string `yaml:"host" env:"PSQL_HOST" env-required:"true"`
+	Port     string `yaml:"port" env:"PSQL_PORT" env-required:"true"`
+	Username string `yaml:"username" env:"PSQL_USERNAME" env-required:"true"`
+	Password string `yaml:"password" env:"PSQL_PASSWORD" env-required:"true"`
+	Database string `yaml:"database" env:"PSQL_DATABASE" env-required:"true"`
+}
 
-	PostgreSQL struct {
-		Host     string `yaml:"host" env:"PSQL_HOST" env-required:"true"`
-		Port     string `yaml:"port" env:"PSQL_PORT" env-required:"true"`
-		Username string `yaml:"username" env:"PSQL_USERNAME" env-required:"true"`
-		Password string `yaml:"password" env:"PSQL_PASSWORD" env-required:"true"`
-		Database string `yaml:"database" env:"PSQL_DATABASE" env-required:"true"`
-	} `yaml:"postgresql"`
+type HTTP struct {
+	Host         string        `yaml:"host" env:"HTTP_HOST" env-required:"true"`
+	Port         string        `yaml:"port" env:"HTTP_PORT" env-required:"true"`
+	ReadTimeout  time.Duration `yaml:"read_timeout" env:"HTTP_READ_TIMEOUT" env-required:"true"`
+	WriteTimeout time.Duration `yaml:"write_timeout" env:"HTTP_WRITE_TIMEOUT" env-required:"true"`
+	IdleTimeout  time.Duration `yaml:"idle_timeout" env:"HTTP_IDLE_TIMEOUT" env-required:"true"`
+	BytesLimit   int64         `yaml:"bytes_limit" env:"HTTP_BYTES_LIMIT" env-required:"true"`
 }
 
 type Auth struct {
 	AccessTokenTTL  time.Duration `yaml:"access_token_ttl" env:"JWT_ACCESS_TOKEN_TTL" env-required:"true"`
 	RefreshTokenTTL time.Duration `yaml:"refresh_token_ttl" env:"JWT_REFRESH_TOKEN_TTL" env-required:"true"`
 	JWTSignKey      string        `yaml:"jwt_sign_key" env:"JWT_SIGN_KEY" env-required:"true"`
+}
+
+type JavaService struct {
+	Host string `yaml:"host" env:"JAVA_SERVICE_HOST" env-required:"true"`
+	Port string `yaml:"port" env:"JAVA_SERVICE_PORT" env-required:"true"`
 }
 
 func MustLoad() *Config {

@@ -17,7 +17,7 @@ type (
 	}
 
 	UserRepository interface {
-		CreateUser(ctx context.Context, user entity.User) error
+		CreateUser(ctx context.Context, user entity.User) (string, error)
 		UserExists(ctx context.Context, oauthID string) (bool, error)
 		GetUserByOauthID(ctx context.Context, oauthID string) (entity.User, error)
 		GetUserByUUID(ctx context.Context, id string) (entity.User, error)
@@ -27,5 +27,10 @@ type (
 		CreateRefreshSession(ctx context.Context, refreshSession entity.RefreshSession) (string, error)
 		GetRefreshSession(ctx context.Context, refreshToken string) (entity.RefreshSession, error)
 		DeleteRefreshSessionByToken(ctx context.Context, refreshToken string) error
+	}
+
+	RoleRepository interface {
+		CreateRole(ctx context.Context, role entity.Role) error
+		GetRolesByUserID(ctx context.Context, userID string) ([]entity.Role, error)
 	}
 )

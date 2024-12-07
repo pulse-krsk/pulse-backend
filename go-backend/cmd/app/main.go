@@ -25,8 +25,6 @@ func main() {
 	setupLogger(cfg.Environment)
 
 	logrus.Fatal(app.Run(cfg))
-	// Есть ли такой пользователь? Елси есть, то возвращаю данные
-	// Если нет, то добавляю в бд и возвращаю
 }
 
 func setupLogger(env string) {

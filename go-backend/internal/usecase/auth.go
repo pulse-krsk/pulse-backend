@@ -17,16 +17,18 @@ import (
 type AuthUseCase struct {
 	userRepo        UserRepository
 	refreshRepo     RefreshSessionsRepository
+	roleRepo        RoleRepository
 	signingKey      string
 	accessTokenTTL  time.Duration
 	refreshTokenTTL time.Duration
-	maxUserSessions int
 }
 
-func NewAuthUseCase(userRepo UserRepository, refreshRepo RefreshSessionsRepository, auth config.Auth) *AuthUseCase {
+func NewAuthUseCase(userRepo UserRepository, refreshRepo RefreshSessionsRepository, roleRepo RoleRepository, auth config.Auth) *AuthUseCase {
 	return &AuthUseCase{
-		userRepo:        userRepo,
-		refreshRepo:     refreshRepo,
+		userRepo:    userRepo,
+		refreshRepo: refreshRepo,
+		roleRepo:    roleRepo,
+
 		signingKey:      auth.JWTSignKey,
 		accessTokenTTL:  auth.AccessTokenTTL,
 		refreshTokenTTL: auth.RefreshTokenTTL,
@@ -47,9 +49,16 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, OauthToken string) (accessT
 		return "", "", entity.User{}, cuserr.SystemError(err, op, "failed to check if user exists")
 	}
 	if !exists {
-		err = a.userRepo.CreateUser(ctx, user)
+		userID, err := a.userRepo.CreateUser(ctx, user)
 		if err != nil {
 			return "", "", entity.User{}, cuserr.SystemError(err, op, "failed to create user")
+		}
+
+		role := entity.Role{UserID: userID, RoleName: "user"}
+		fmt.Println(role)
+		err = a.roleRepo.CreateRole(ctx, role)
+		if err != nil {
+			return "", "", entity.User{}, cuserr.SystemError(err, op, "failed to create user role")
 		}
 	}
 
@@ -58,7 +67,12 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, OauthToken string) (accessT
 		return "", "", entity.User{}, cuserr.SystemError(err, op, "failed to get user")
 	}
 
-	accessToken, refreshToken, err = a.GenerateTokenPair(ctx, user.ID, "admin")
+	roles, err := a.roleRepo.GetRolesByUserID(ctx, user.ID)
+	if err != nil {
+		return "", "", entity.User{}, cuserr.SystemError(err, op, "failed to get user role")
+	}
+
+	accessToken, refreshToken, err = a.GenerateTokenPair(ctx, user.ID, roles)
 	if err != nil {
 		return "", "", entity.User{}, fmt.Errorf("%s: %w", op, err)
 	}
@@ -104,7 +118,12 @@ func (a *AuthUseCase) RefreshTokens(ctx context.Context, refreshTkn string) (acc
 		return "", "", cuserr.SystemError(err, op, "failed to get user")
 	}
 
-	accessToken, refreshToken, err = a.GenerateTokenPair(ctx, user.ID, "role")
+	roles, err := a.roleRepo.GetRolesByUserID(ctx, user.ID)
+	if err != nil {
+		return "", "", cuserr.SystemError(err, op, "failed to get user role")
+	}
+
+	accessToken, refreshToken, err = a.GenerateTokenPair(ctx, user.ID, roles)
 	if err != nil {
 		return "", "", fmt.Errorf("%s: %w", op, err)
 	}
@@ -112,11 +131,11 @@ func (a *AuthUseCase) RefreshTokens(ctx context.Context, refreshTkn string) (acc
 	return accessToken, refreshToken, nil
 }
 
-func (a *AuthUseCase) GenerateTokenPair(ctx context.Context, userID, role string) (accessToken, refreshToken string, err error) {
-	logrus.WithFields(logrus.Fields{"userID": userID, "role": role}).Debug("generating token pair")
+func (a *AuthUseCase) GenerateTokenPair(ctx context.Context, userID string, roles []entity.Role) (accessToken, refreshToken string, err error) {
+	logrus.WithField("userID", userID).Debug("generating token pair")
 	const op string = "AuthUseCase.GenerateTokenPair"
 
-	accesstoken, err := a.GenerateAccessToken(userID, role)
+	accesstoken, err := a.GenerateAccessToken(userID, roles)
 	if err != nil {
 		return "", "", fmt.Errorf("%s: %w", op, err)
 	}
@@ -129,14 +148,19 @@ func (a *AuthUseCase) GenerateTokenPair(ctx context.Context, userID, role string
 	return accesstoken, refreshToken, nil
 }
 
-func (a *AuthUseCase) GenerateAccessToken(userID, role string) (string, error) {
-	logrus.WithFields(logrus.Fields{"id": userID, "role": role}).Debug("generating access token")
+func (a *AuthUseCase) GenerateAccessToken(userID string, roles []entity.Role) (string, error) {
+	logrus.WithField("id", userID).Debug("generating access token")
 	const op string = "AuthUseCase.GenerateAccessToken"
 
+	var roleNames []string
+	for _, role := range roles {
+		roleNames = append(roleNames, role.RoleName) // Используем поле Name
+	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"ueid": userID,
-		"iat":  time.Now().Unix(),
-		"exp":  time.Now().Add(a.accessTokenTTL).Unix(),
+		"ueid":  userID,
+		"iat":   time.Now().Unix(),
+		"exp":   time.Now().Add(a.accessTokenTTL).Unix(),
+		"roles": roleNames,
 	})
 
 	signedToken, err := token.SignedString([]byte(a.signingKey))

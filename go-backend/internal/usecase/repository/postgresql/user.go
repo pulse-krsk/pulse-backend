@@ -25,7 +25,7 @@ func NewUserRepository(client *pgxpool.Pool) *userRepository {
 	}
 }
 
-func (r *userRepository) CreateUser(ctx context.Context, user entity.User) error {
+func (r *userRepository) CreateUser(ctx context.Context, user entity.User) (string, error) {
 	logrus.WithField("email", user.Email).Trace("creating user")
 	const op string = "userRepository.CreateUser"
 
@@ -50,19 +50,19 @@ func (r *userRepository) CreateUser(ctx context.Context, user entity.User) error
 		).
 		ToSql()
 	if err != nil {
-		return psql.ErrCreateQuery(op, err)
+		return "", psql.ErrCreateQuery(op, err)
 	}
 
 	commtag, err := r.client.Exec(ctx, sql, args...)
 	if err != nil {
-		return psql.ErrExec(op, err)
+		return "", psql.ErrExec(op, err)
 	}
 
 	if commtag.RowsAffected() == 0 {
-		return psql.NoRowsAffected
+		return "", psql.NoRowsAffected
 	}
 
-	return nil
+	return uuid.String(), nil
 }
 
 func (r *userRepository) UserExists(ctx context.Context, oauthID string) (bool, error) {

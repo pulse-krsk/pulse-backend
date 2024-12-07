@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/kurochkinivan/pulskrsk/config"
 	"github.com/kurochkinivan/pulskrsk/internal/usecase"
 )
 
@@ -21,11 +22,14 @@ func NewHandlers(auth authHandler) *Handlers {
 	}
 }
 
-func NewRouter(host, port string, bytesLimit int64, sigingKey string, a usecase.Auth) error {
+func NewRouter(cfg *config.Config, a usecase.Auth) error {
 	mux := http.NewServeMux()
 
-	authHandler := NewAuthHandler(a, bytesLimit, sigingKey)
+	authHandler := NewAuthHandler(a, cfg.BytesLimit, cfg.JWTSignKey)
 	authHandler.Register(mux)
 
-	return http.ListenAndServe(fmt.Sprintf("%s:%s", host, port), mux)
+	eventHandler := NewEventHandler(cfg.JavaService)
+	eventHandler.Register(mux)
+
+	return http.ListenAndServe(fmt.Sprintf("%s:%s", cfg.HTTP.Host, cfg.HTTP.Port), mux)
 }

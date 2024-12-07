@@ -5,7 +5,6 @@ auth:
   refresh_token_ttl: 1440h
   jwt_sign_key: 'fce9ee13dd03f63e21f86158e7b9cc79079886059d445ce7b0eca9ceceb88c76'
 
-
 http:
   host: '0.0.0.0'
   port: '8080'
@@ -14,9 +13,13 @@ http:
   idle_timeout: 60s
   bytes_limit: 1024
 
+java_service:
+  host: '192.168.1.148'
+  port: '8081'
+
 postgresql:
   username: 'postgres'
   password: 'postgres'
   host: 'localhost' # localhost/postgresql
   port: '5432'     # 30000/5432
-  database: 'pulse-db'
+  database: 'pulsdb'

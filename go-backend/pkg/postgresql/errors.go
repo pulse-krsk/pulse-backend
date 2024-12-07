@@ -21,3 +21,7 @@ func ErrCreateQuery(op string, err error) error {
 func ErrDoQuery(op string, err error) error {
 	return errors.Wrap(err, fmt.Sprint(op, ": failed to do sql query"))
 }
+
+func ErrScan(op string, err error) error {
+	return errors.Wrap(err, fmt.Sprint(op, ": failed to scan"))
+}

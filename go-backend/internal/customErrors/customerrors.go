@@ -17,6 +17,13 @@ var (
 	ErrInvalidUUID     = NewAppErr(nil, "invalid credentials", "client provided invalid UUID", "VS-004", http.StatusBadRequest)
 )
 
+// PS - proxy service. This is PS error.
+var (
+	ErrCreateProxyReq  = NewAppErr(nil, "failed to create request", "failed to create request to proxy service", "PS-001", http.StatusInternalServerError)
+	ErrPerformProxyReq = NewAppErr(nil, "failed to perform request", "failed to perform request to proxy service", "PS-002", http.StatusInternalServerError)
+	ErrCopyProxyResp   = NewAppErr(nil, "failed to copy response", "failed to copy response from proxy service", "PS-003", http.StatusInternalServerError)
+)
+
 // AS - auth server. This is AS error.
 var (
 	ErrUserExists          = NewAppErr(nil, "the email you have provided is already associated with an account", "user with provided email already exists", "AS-001", http.StatusConflict)

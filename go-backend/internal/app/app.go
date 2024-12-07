@@ -25,13 +25,15 @@ func Run(cfg *config.Config) error {
 	logrus.Info("creating repositories and usecases...")
 	authRepo := postgresql.NewUserRepository(client)
 	refreshRepo := postgresql.NewRefreshSessionsRepository(client)
+	roleRepo := postgresql.NewRoleRepository(client)
 	dependencies := usecase.UseCasesDependencies{
 		UserRepo:    authRepo,
 		RefreshRepo: refreshRepo,
+		RoleRepo:    roleRepo,
 		Config:      cfg,
 	}
 	authUseCase := usecase.NewUseCases(dependencies)
 
 	logrus.Info("starting server...")
-	return v1.NewRouter(cfg.HTTP.Host, cfg.HTTP.Port, cfg.HTTP.BytesLimit, cfg.Auth.JWTSignKey, authUseCase)
+	return v1.NewRouter(cfg, authUseCase)
 }

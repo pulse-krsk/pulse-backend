@@ -24,7 +24,8 @@ func NewAuthHandler(auth usecase.Auth, bytesLimit int64, signingkey string) *aut
 	}
 }
 
-const baseAuthPath string = "/api/v1/auth"
+const basePath string = "/api/v1"
+const baseAuthPath string = basePath + "/auth"
 
 func (h *authHandler) Register(mux *http.ServeMux) {
 	mux.HandleFunc(fmt.Sprintf("%s %s/login", http.MethodPost, baseAuthPath), errMdw(logMdw(h.loginUser)))

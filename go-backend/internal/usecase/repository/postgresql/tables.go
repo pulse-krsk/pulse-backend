@@ -7,4 +7,5 @@ const scheme = "public."
 const (
 	TableUsers           = scheme + "users"
 	TableRefreshSessions = scheme + "refresh_sessions"
+	TableRole            = scheme + "roles"
 )

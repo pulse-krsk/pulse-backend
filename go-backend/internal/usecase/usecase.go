@@ -9,11 +9,12 @@ type UseCases struct {
 type UseCasesDependencies struct {
 	UserRepo    UserRepository
 	RefreshRepo RefreshSessionsRepository
+	RoleRepo    RoleRepository
 	*config.Config
 }
 
 func NewUseCases(d UseCasesDependencies) *UseCases {
 	return &UseCases{
-		Auth: NewAuthUseCase(d.UserRepo, d.RefreshRepo, d.Config.Auth),
+		Auth: NewAuthUseCase(d.UserRepo, d.RefreshRepo, d.RoleRepo, d.Config.Auth),
 	}
 }
