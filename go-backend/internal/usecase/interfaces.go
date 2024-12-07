@@ -34,3 +34,21 @@ type (
 		GetRolesByUserID(ctx context.Context, userID string) ([]entity.Role, error)
 	}
 )
+
+type (
+	User interface {
+		AddFavoriteEventTypes(ctx context.Context, userID string, eventTypes []string) error
+		GetUserWithTypes(ctx context.Context, userID string) (entity.UserWithTypes, error)
+	}
+
+	UserFavoriteTypesRepository interface {
+		AddUserFavouriteTypes(ctx context.Context, userID string, typeIDs []string) error
+		DeleteAllUserFavouriteTypes(ctx context.Context, userID string) error
+		GetAllUserFavouriteTypesID(ctx context.Context, userID string) ([]string, error)
+	}
+
+	EventTypesRepository interface {
+		GetEventTypeByID(ctx context.Context, typeID string) (entity.EventType, error)
+		GetEventTypeByType(ctx context.Context, eventType string) (entity.EventType, error)
+	}
+)

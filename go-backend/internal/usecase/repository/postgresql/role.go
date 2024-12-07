@@ -27,7 +27,7 @@ func (r *roleRepository) CreateRole(ctx context.Context, role entity.Role) error
 	const op string = "roleRepository.CreateRole"
 
 	sql, args, err := r.qb.
-		Insert(TableRole).
+		Insert(TableRoles).
 		Columns(
 			"user_id",
 			"role",
@@ -62,7 +62,7 @@ func (r *roleRepository) GetRolesByUserID(ctx context.Context, userID string) ([
 			"role",
 			"user_id",
 		).
-		From(TableRole).
+		From(TableRoles).
 		Where(sq.Eq{"user_id": userID}).
 		ToSql()
 	if err != nil {

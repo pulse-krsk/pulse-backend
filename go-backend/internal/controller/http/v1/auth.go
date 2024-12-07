@@ -24,9 +24,6 @@ func NewAuthHandler(auth usecase.Auth, bytesLimit int64, signingkey string) *aut
 	}
 }
 
-const basePath string = "/api/v1"
-const baseAuthPath string = basePath + "/auth"
-
 func (h *authHandler) Register(mux *http.ServeMux) {
 	mux.HandleFunc(fmt.Sprintf("%s %s/login", http.MethodPost, baseAuthPath), errMdw(logMdw(h.loginUser)))
 	mux.HandleFunc(fmt.Sprintf("%s %s/refresh", http.MethodGet, baseAuthPath), errMdw(logMdw(h.refreshTokens)))
@@ -46,6 +43,17 @@ type (
 	}
 )
 
+// @Summary		Log user in
+// @Description	log user in
+// @Tags			auth
+// @Accept			json
+// @Param			request	body	v1.loginRequest	true	"login request parameters"
+// @Produce		json
+// @Success		200	{object}	v1.loginResponse	"OK. User was logged in"
+// @Failure		400		"Bad Request"
+// @Failure		401			"Unauthorized. Email or password is incorrect"
+// @Failure		500			"Internal Server Error"
+// @Router			/auth/login [post]
 func (h *authHandler) loginUser(w http.ResponseWriter, r *http.Request) error {
 	w.Header().Set("Content-Type", "application/json")
 	const op string = "authHandler.loginUser"
@@ -100,6 +108,16 @@ func (h *authHandler) loginUser(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
+// @Summary		Refresh tokens
+// @Description	get new access and refresh tokens
+// @Tags			auth
+// @Accept			json
+// @Produce		json
+// @Success		200	"OK. Tokens were refreshed"
+// @Failure		400					"Bad Request"
+// @Failure		401					"Unauthorized. Request cannot be processed with provided credentials"
+// @Failure		500					"Internal Server Error"
+// @Router			/auth/refresh [get]
 func (h *authHandler) refreshTokens(w http.ResponseWriter, r *http.Request) error {
 	w.Header().Set("Content-Type", "application/json")
 	const op string = "authHandler.refreshTokens"
@@ -120,6 +138,15 @@ func (h *authHandler) refreshTokens(w http.ResponseWriter, r *http.Request) erro
 	return nil
 }
 
+// @Summary		Log user out
+// @Description	log user out using refresh-token
+// @Tags			auth
+// @Accept			json
+// @Produce		json
+// @Success		200		"OK. User was logged out"
+// @Failure		400					"Bad Request"
+// @Failure		500					"Internal Server Error"
+// @Router			/auth/logout [post]
 func (h *authHandler) logoutUser(w http.ResponseWriter, r *http.Request) error {
 	w.Header().Set("Content-Type", "application/json")
 	const op string = "authHandler.logoutUser"

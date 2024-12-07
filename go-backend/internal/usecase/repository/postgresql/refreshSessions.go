@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/kurochkinivan/pulskrsk/internal/entity"
@@ -30,17 +31,21 @@ func (r *refreshSessionsRepository) CreateRefreshSession(ctx context.Context, re
 	logrus.WithField("user_id", refreshSession.UserID).Trace("creating refresh session")
 	const op string = "refreshSessionsRepository.CreateRefreshSession"
 
+	refreshToken, _ := uuid.NewUUID()
 	sql, args, err := r.qb.
 		Insert(TableRefreshSessions).
 		Columns(
+			"refresh_token",
 			"user_id",
 			"issued_at",
 			"expiration",
-		).Values(
-		refreshSession.UserID,
-		refreshSession.IssuedAt,
-		refreshSession.Expiration,
-	).Suffix("RETURNING refresh_token").
+		).
+		Values(
+			refreshToken.String(),
+			refreshSession.UserID,
+			refreshSession.IssuedAt,
+			refreshSession.Expiration,
+		).Suffix("RETURNING refresh_token").
 		ToSql()
 	if err != nil {
 		return "", psql.ErrCreateQuery(op, err)

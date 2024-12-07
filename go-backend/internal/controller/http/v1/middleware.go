@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5/middleware"
@@ -47,17 +46,13 @@ func logMdw(next appHandler) appHandler {
 
 func authMdw(next appHandler, signingKey string) appHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		header := r.Header.Get("Authorization")
-		if header == "" {
-			return cuserr.ErrEmptyAuthHeader
+		accessTokenCookie, err := r.Cookie("access_token")
+		if err != nil {
+			return cuserr.ErrGetCookie.WithErr(err)
 		}
+		accessToken := accessTokenCookie.Value
 
-		headerParts := strings.Split(header, " ")
-		if len(headerParts) != 2 {
-			return cuserr.ErrInvalidAuthHeader
-		}
-
-		payload, err := parseToken(signingKey, headerParts[1])
+		payload, err := parseToken(signingKey, accessToken)
 		if err != nil {
 			return err
 		}

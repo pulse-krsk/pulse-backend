@@ -7,6 +7,7 @@ import (
 	"runtime"
 
 	"github.com/kurochkinivan/pulskrsk/config"
+	_ "github.com/kurochkinivan/pulskrsk/docs"
 	"github.com/kurochkinivan/pulskrsk/internal/app"
 	"github.com/sirupsen/logrus"
 )

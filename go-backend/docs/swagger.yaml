@@ -1,0 +1,90 @@
+basePath: /api/v1
+definitions:
+  v1.loginRequest:
+    properties:
+      token:
+        type: string
+    type: object
+  v1.loginResponse:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: pulse kransnoyarsk
+  title: Pulse-krsk API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: log user in
+      parameters:
+      - description: login request parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK. User was logged in
+          schema:
+            $ref: '#/definitions/v1.loginResponse'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized. Email or password is incorrect
+        "500":
+          description: Internal Server Error
+      summary: Log user in
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: log user out using refresh-token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK. User was logged out
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Log user out
+      tags:
+      - auth
+  /auth/refresh:
+    get:
+      consumes:
+      - application/json
+      description: get new access and refresh tokens
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK. Tokens were refreshed
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized. Request cannot be processed with provided credentials
+        "500":
+          description: Internal Server Error
+      summary: Refresh tokens
+      tags:
+      - auth
+swagger: "2.0"

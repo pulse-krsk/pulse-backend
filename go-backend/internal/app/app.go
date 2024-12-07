@@ -26,14 +26,19 @@ func Run(cfg *config.Config) error {
 	authRepo := postgresql.NewUserRepository(client)
 	refreshRepo := postgresql.NewRefreshSessionsRepository(client)
 	roleRepo := postgresql.NewRoleRepository(client)
+	eventTypeRepo := postgresql.NewEventTypeRepository(client)
+	usersFavoriteTypesRepo := postgresql.NewUsersFavoriteTypesRepository(client)
 	dependencies := usecase.UseCasesDependencies{
-		UserRepo:    authRepo,
-		RefreshRepo: refreshRepo,
-		RoleRepo:    roleRepo,
-		Config:      cfg,
+		UserRepo:             authRepo,
+		RefreshRepo:          refreshRepo,
+		RoleRepo:             roleRepo,
+		UserFavoriteTypeRepo: usersFavoriteTypesRepo,
+		EventTypesRepo:       eventTypeRepo,
+		Config:               cfg,
 	}
 	authUseCase := usecase.NewUseCases(dependencies)
+	userUseCase := usecase.NewUseCases(dependencies)
 
 	logrus.Info("starting server...")
-	return v1.NewRouter(cfg, authUseCase)
+	return v1.NewRouter(cfg, authUseCase, userUseCase)
 }
