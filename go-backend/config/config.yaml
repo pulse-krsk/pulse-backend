@@ -19,4 +19,4 @@ postgresql:
   password: 'postgres'
   host: 'localhost' # localhost/postgresql
   port: '5432'     # 30000/5432
-  database: 'pulsdb'
+  database: 'pulse-db'
