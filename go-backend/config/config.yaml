@@ -1,0 +1,23 @@
+environment: 'local' # local/prod
+
+auth:
+  access_token_ttl: 15m
+  refresh_token_ttl: 1440h
+  max_user_sessions: 5
+  jwt_sign_key: 'fce9ee13dd03f63e21f86158e7b9cc79079886059d445ce7b0eca9ceceb88c76'
+
+
+http:
+  host: '0.0.0.0'
+  port: '8080'
+  read_timeout: 5s
+  write_timeout: 5s
+  idle_timeout: 60s
+  bytes_limit: 1024
+
+postgresql:
+  username: 'postgres'
+  password: 'postgres'
+  host: 'localhost' # localhost/postgresql
+  port: '5432'     # 30000/5432
+  database: 'pulsdb'
