@@ -57,7 +57,6 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, OauthToken string) (accessT
 	if err != nil {
 		return "", "", entity.User{}, cuserr.SystemError(err, op, "failed to get user")
 	}
-	fmt.Println(user)
 
 	accessToken, refreshToken, err = a.GenerateTokenPair(ctx, user.ID, "admin")
 	if err != nil {

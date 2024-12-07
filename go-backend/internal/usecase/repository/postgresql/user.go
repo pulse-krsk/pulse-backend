@@ -38,6 +38,7 @@ func (r *userRepository) CreateUser(ctx context.Context, user entity.User) error
 			"last_name",
 			"email",
 			"oauth_id",
+			"avatar",
 		).
 		Values(
 			uuid.String(),
@@ -45,6 +46,7 @@ func (r *userRepository) CreateUser(ctx context.Context, user entity.User) error
 			user.LastName,
 			user.Email,
 			user.OauthID,
+			user.Avatar,
 		).
 		ToSql()
 	if err != nil {
@@ -100,6 +102,7 @@ func (r *userRepository) GetUserByOauthID(ctx context.Context, oauthID string) (
 			"first_name",
 			"last_name",
 			"email",
+			"avatar",
 		).
 		From(TableUsers).
 		Where(sq.Eq{"oauth_id": oauthID}).
@@ -109,7 +112,7 @@ func (r *userRepository) GetUserByOauthID(ctx context.Context, oauthID string) (
 	}
 
 	var user entity.User
-	err = r.client.QueryRow(ctx, sql, args...).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email)
+	err = r.client.QueryRow(ctx, sql, args...).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Avatar)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.User{}, nil
@@ -130,6 +133,7 @@ func (r *userRepository) GetUserByUUID(ctx context.Context, userID string) (enti
 			"first_name",
 			"last_name",
 			"email",
+			"avatar",
 		).
 		From(TableUsers).
 		Where(sq.Eq{"id": userID}).
@@ -139,7 +143,7 @@ func (r *userRepository) GetUserByUUID(ctx context.Context, userID string) (enti
 	}
 
 	var user entity.User
-	err = r.client.QueryRow(ctx, sql, args...).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email)
+	err = r.client.QueryRow(ctx, sql, args...).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Avatar)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.User{}, nil
