@@ -25,8 +25,8 @@ func NewUserHandler(userUseCase usecase.User, bytesLimit int64, signingKey strin
 }
 
 func (h *userHandler) Register(mux *http.ServeMux) {
-	mux.HandleFunc(fmt.Sprintf("%s %s/users/event-types", http.MethodPost, basePath), errMdw(authMdw(logMdw(h.addFavoriteEventTypes), h.signingKey)))
-	mux.HandleFunc(fmt.Sprintf("%s %s/users/profile", http.MethodGet, basePath), errMdw(authMdw(logMdw(h.getUserWithTypes), h.signingKey)))
+	mux.HandleFunc(fmt.Sprintf("%s %s/event-types", http.MethodPost, baseUsersPath), errMdw(authMdw(logMdw(h.addFavoriteEventTypes), h.signingKey)))
+	mux.HandleFunc(fmt.Sprintf("%s %s/profile", http.MethodGet, baseUsersPath), errMdw(authMdw(logMdw(h.getUserWithTypes), h.signingKey)))
 }
 
 type (

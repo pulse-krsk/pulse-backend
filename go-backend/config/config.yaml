@@ -12,6 +12,7 @@ http:
   write_timeout: 5s
   idle_timeout: 60s
   bytes_limit: 1024
+  max_memory: 1024000
 
 java_service:
   host: '192.168.1.148'

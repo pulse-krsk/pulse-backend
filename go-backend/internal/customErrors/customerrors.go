@@ -7,14 +7,16 @@ var (
 	ErrNotFound             = NewAppErr(nil, "not found", "entity was not found", "US-001", http.StatusNotFound)
 	ErrNotAllFieldsProvided = NewAppErr(nil, "not all fields provided", "user didn't provide all necessary fields", "US-002", http.StatusBadRequest)
 	ErrGetCookie            = NewAppErr(nil, "failed to get cookie", "failed to get cookie", "US-003", http.StatusInternalServerError)
+	ErrCreateFile           = NewAppErr(nil, "failed to create file", "failed to create file", "US-004", http.StatusInternalServerError)
 )
 
 // VS - validation service. This is VS error.
 var (
-	ErrValidateData    = NewAppErr(nil, "failed to validate data", "failed to validate data", "VS-001", http.StatusBadRequest)
-	ErrSerializeData   = NewAppErr(nil, "failed serialize/desirialize data", "failed serialize/desirialize data", "VS-002", http.StatusBadRequest)
-	ErrReadRequestBody = NewAppErr(nil, "failed to read request body", "failed to read request body", "VS-003", http.StatusInternalServerError)
-	ErrInvalidUUID     = NewAppErr(nil, "invalid credentials", "client provided invalid UUID", "VS-004", http.StatusBadRequest)
+	ErrValidateData         = NewAppErr(nil, "failed to validate data", "failed to validate data", "VS-001", http.StatusBadRequest)
+	ErrSerializeData        = NewAppErr(nil, "failed serialize/desirialize data", "failed serialize/desirialize data", "VS-002", http.StatusBadRequest)
+	ErrReadRequestBody      = NewAppErr(nil, "failed to read request body", "failed to read request body", "VS-003", http.StatusInternalServerError)
+	ErrInvalidUUID          = NewAppErr(nil, "invalid credentials", "client provided invalid UUID", "VS-004", http.StatusBadRequest)
+	ErrRetrieveDataFromFile = NewAppErr(nil, "failed to retrieve data from file", "failed to retrieve data from file", "VS-005", http.StatusInternalServerError)
 )
 
 // PS - proxy service. This is PS error.

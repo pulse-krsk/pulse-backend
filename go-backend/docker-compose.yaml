@@ -1,0 +1,43 @@
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
+
+
+services:
+  # backend-go:
+  #   build:
+  #     dockerfile: Dockerfile
+  #   networks:
+  #     - app
+  #   ports:
+  #     - 8080:8080
+  #   depends_on:
+  #     - postgres
+  #     - backend-java
+
+
+  backend-java:
+    image: extoozy/pulse-krsk-java-backend:latest
+    networks:
+      - app
+    ports:
+      - 8081:8081
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16.2-alpine
+    networks:
+      - app
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=pulsdb
+    volumes:
+      - db-data:/var/lib/postgresql/data

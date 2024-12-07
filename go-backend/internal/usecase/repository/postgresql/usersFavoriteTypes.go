@@ -31,23 +31,26 @@ func (r *usersFavoriteTypesRepository) AddUserFavouriteTypes(ctx context.Context
 		return nil
 	}
 
-	query := r.qb.Insert(TableUsersFavoriteTypes).
-		Columns("user_id", "type_id")
+	query := r.qb.Insert(TableUsersFavoriteTypes).Columns("user_id", "type_id")
+	var hasFields bool
 	for _, typeID := range typeIDs {
+		if typeID == "" {
+			continue
+		}
+		hasFields = true
 		query = query.Values(userID, typeID)
+	}
+	if !hasFields {
+		return nil
 	}
 
 	sql, args, err := query.ToSql()
 	if err != nil {
 		return psql.ErrCreateQuery(op, err)
 	}
-	commTag, err := r.client.Exec(ctx, sql, args...)
+	_, err = r.client.Exec(ctx, sql, args...)
 	if err != nil {
 		return psql.ErrExec(op, err)
-	}
-
-	if commTag.RowsAffected() == 0 {
-		return psql.NoRowsAffected
 	}
 
 	return nil
