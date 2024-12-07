@@ -30,7 +30,6 @@ func NewAuthUseCase(userRepo UserRepository, refreshRepo RefreshSessionsReposito
 		signingKey:      auth.JWTSignKey,
 		accessTokenTTL:  auth.AccessTokenTTL,
 		refreshTokenTTL: auth.RefreshTokenTTL,
-		maxUserSessions: auth.MaxUserSessions,
 	}
 }
 

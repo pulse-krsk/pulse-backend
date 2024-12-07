@@ -84,9 +84,22 @@ func (r *refreshSessionsRepository) GetRefreshSession(ctx context.Context, refre
 	return refreshSession, nil
 }
 
-func (r *refreshSessionsRepository) DeleteRefreshSessionsByUserID(ctx context.Context, userID string) error {
-	return nil
-}
 func (r *refreshSessionsRepository) DeleteRefreshSessionByToken(ctx context.Context, refreshToken string) error {
+	logrus.WithField("refresh_token", refreshToken).Trace("deleting refresh session by refresh token")
+	const op string = "refreshSessionsRepository.DeleteRefreshSessionByToken"
+
+	sql, args, err := r.qb.
+		Delete(TableRefreshSessions).
+		Where(sq.Eq{"refresh_token": refreshToken}).
+		ToSql()
+	if err != nil {
+		return psql.ErrCreateQuery(op, err)
+	}
+
+	_, err = r.client.Exec(ctx, sql, args...)
+	if err != nil {
+		return psql.ErrExec(op, err)
+	}
+
 	return nil
 }

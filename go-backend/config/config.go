@@ -34,7 +34,6 @@ type Config struct {
 type Auth struct {
 	AccessTokenTTL  time.Duration `yaml:"access_token_ttl" env:"JWT_ACCESS_TOKEN_TTL" env-required:"true"`
 	RefreshTokenTTL time.Duration `yaml:"refresh_token_ttl" env:"JWT_REFRESH_TOKEN_TTL" env-required:"true"`
-	MaxUserSessions int           `yaml:"max_user_sessions" env:"JWT_MAX_USER_SESSIONS" env-required:"true"`
 	JWTSignKey      string        `yaml:"jwt_sign_key" env:"JWT_SIGN_KEY" env-required:"true"`
 }
 

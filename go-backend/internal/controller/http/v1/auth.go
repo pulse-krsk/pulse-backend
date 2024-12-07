@@ -28,6 +28,8 @@ const baseAuthPath string = "/api/v1/auth"
 
 func (h *authHandler) Register(mux *http.ServeMux) {
 	mux.HandleFunc(fmt.Sprintf("%s %s/login", http.MethodPost, baseAuthPath), errMdw(logMdw(h.loginUser)))
+	mux.HandleFunc(fmt.Sprintf("%s %s/refresh", http.MethodGet, baseAuthPath), errMdw(logMdw(h.refreshTokens)))
+	mux.HandleFunc(fmt.Sprintf("%s %s/logout", http.MethodPost, baseAuthPath), errMdw(logMdw(h.logoutUser)))
 }
 
 type (
@@ -97,31 +99,39 @@ func (h *authHandler) loginUser(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-// func (h *authHandler) refreshTokens(w http.ResponseWriter, r *http.Request) error {
-// 	w.Header().Set("Content-Type", "application/json")
-// 	const op string = "authHandler.refreshTokens"
+func (h *authHandler) refreshTokens(w http.ResponseWriter, r *http.Request) error {
+	w.Header().Set("Content-Type", "application/json")
+	const op string = "authHandler.refreshTokens"
 
-// 	refreshToken, err := r.Cookie("refresh_token")
-// 	if err != nil {
-// 		return cuserr.ErrGetCookie.WithErr(fmt.Errorf("%s: %w", op, err))
-// 	}
+	refreshToken, err := r.Cookie("refresh_token")
+	if err != nil {
+		return cuserr.ErrGetCookie.WithErr(fmt.Errorf("%s: %w", op, err))
+	}
 
-// 	accessToken, refreshToken, err := h.auth.RefreshTokens(r.Context(), ref)
-// 	if err != nil {
-// 		return fmt.Errorf("%s: %w", op, err)
-// 	}
+	accessToken, newRefreshToken, err := h.auth.RefreshTokens(r.Context(), refreshToken.Value)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
 
-// 	resp := &refreshTokensResponse{
-// 		AccessToken:  accessToken,
-// 		RefreshToken: refreshToken,
-// 	}
+	http.SetCookie(w, &http.Cookie{Name: "refresh_token", Value: newRefreshToken, Path: "/", HttpOnly: true, SameSite: http.SameSiteLaxMode})
+	http.SetCookie(w, &http.Cookie{Name: "access_token", Value: accessToken, Path: "/", SameSite: http.SameSiteLaxMode})
 
-// 	respData, err := json.Marshal(resp)
-// 	if err != nil {
-// 		return cuserr.ErrSerializeData.WithErr(fmt.Errorf("%s: %w", op, err))
-// 	}
+	return nil
+}
 
-// 	w.Write(respData)
+func (h *authHandler) logoutUser(w http.ResponseWriter, r *http.Request) error {
+	w.Header().Set("Content-Type", "application/json")
+	const op string = "authHandler.logoutUser"
 
-// 	return nil
-// }
+	refreshToken, err := r.Cookie("refresh_token")
+	if err != nil {
+		return cuserr.ErrGetCookie.WithErr(fmt.Errorf("%s: %w", op, err))
+	}
+
+	err = h.auth.LogoutUser(r.Context(), refreshToken.Value)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
+}

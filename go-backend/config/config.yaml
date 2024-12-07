@@ -3,7 +3,6 @@ environment: 'local' # local/prod
 auth:
   access_token_ttl: 15m
   refresh_token_ttl: 1440h
-  max_user_sessions: 5
   jwt_sign_key: 'fce9ee13dd03f63e21f86158e7b9cc79079886059d445ce7b0eca9ceceb88c76'
 
 

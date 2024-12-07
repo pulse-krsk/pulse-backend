@@ -27,6 +27,5 @@ type (
 		CreateRefreshSession(ctx context.Context, refreshSession entity.RefreshSession) (string, error)
 		GetRefreshSession(ctx context.Context, refreshToken string) (entity.RefreshSession, error)
 		DeleteRefreshSessionByToken(ctx context.Context, refreshToken string) error
-		DeleteRefreshSessionsByUserID(ctx context.Context, userID string) error
 	}
 )
