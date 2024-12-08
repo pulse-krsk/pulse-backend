@@ -33,6 +33,17 @@ type HTTP struct {
 	IdleTimeout  time.Duration `yaml:"idle_timeout" env:"HTTP_IDLE_TIMEOUT" env-required:"true"`
 	BytesLimit   int64         `yaml:"bytes_limit" env:"HTTP_BYTES_LIMIT" env-required:"true"`
 	MaxMemory    int64         `yaml:"max_memory" env:"HTTP_MAX_MEMORY" env-required:"true"`
+	CORS         `yaml:"cors"`
+}
+
+type CORS struct {
+	AllowedMethods     []string `yaml:"allowed_methods" env:"HTTP_CORS_ALLOWED_METHODS" env-required:"true"`
+	AllowedOrigins     []string `yaml:"allowed_origins" env:"HTTP_CORS_ALLOWED_ORIGINS" env-required:"true"`
+	AllowCredentials   bool     `yaml:"allow_credentials" env:"HTTP_CORS_ALLOW_CREDENTIALS" env-required:"true"`
+	AllowedHeaders     []string `yaml:"allowed_headers" env:"HTTP_CORS_ALLOWED_HEADERS" env-required:"true"`
+	OptionsPassthrough bool     `yaml:"options_pass_through" env:"HTTP_CORS_OPTIONS_PASS_THROUGH" env-required:"true"`
+	ExposedHeaders     []string `yaml:"exposed_headers" env:"HTTP_CORS_EXPOSED_HEADERS" env-required:"true"`
+	Debug              bool     `yaml:"debug" env:"HTTP_CORS_DEBUG" env-required:"true"`
 }
 
 type Auth struct {

@@ -25,7 +25,15 @@ func main() {
 	logrus.Info("setup logger")
 	setupLogger(cfg.Environment)
 
-	logrus.Fatal(app.Run(cfg))
+	a, err := app.NewApp(cfg)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	err = a.StartHTTP()
+	if err != nil {
+		logrus.Fatal(err)
+	}
 }
 
 func setupLogger(env string) {

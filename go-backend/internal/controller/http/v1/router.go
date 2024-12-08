@@ -7,7 +7,6 @@ import (
 
 	"github.com/kurochkinivan/pulskrsk/config"
 	"github.com/kurochkinivan/pulskrsk/internal/usecase"
-	"github.com/rs/cors"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -20,7 +19,7 @@ type Handler interface {
 // @version		1.0
 // @host			localhost:8080
 // @BasePath		/api/v1
-func NewRouter(cfg *config.Config, a usecase.Auth, u usecase.User) error {
+func NewRouter(cfg *config.Config, a usecase.Auth, u usecase.User) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	proxyURL := &url.URL{
@@ -40,14 +39,8 @@ func NewRouter(cfg *config.Config, a usecase.Auth, u usecase.User) error {
 	eventHandler := NewEventHandler(cfg.BytesLimit)
 	eventHandler.Register(mux)
 
-	c := cors.New(cors.Options{
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"}, // Разрешенные методы
-		AllowedHeaders:   []string{"*"},                            // Разрешенные заголовки
-		AllowCredentials: true,                                     // Разрешение на отправку куки
-	})
-
 	httpSwagger.Handler()
 	mux.Handle("/swagger/", httpSwagger.WrapHandler)
 
-	return http.ListenAndServe(fmt.Sprintf("%s:%s", cfg.HTTP.Host, cfg.HTTP.Port), c.Handler(mux))
+	return mux
 }

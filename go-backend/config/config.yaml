@@ -13,6 +13,14 @@ http:
   idle_timeout: 60s
   bytes_limit: 1024
   max_memory: 1024000
+  cors : 
+    allowed_methods : ["GET", "POST", PATCH, DELETE]
+    allowed_origins : ["http://localhost:3000"]
+    allow_credentials : true
+    allowed_headers : ["authorization", "content-type"]
+    options_pass_through : true
+    exposed_headers : []
+    debug : true
 
 java_service:
   host: 'backend-java' # 192.168.1.148/backend-java
