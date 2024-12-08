@@ -127,13 +127,24 @@ func (h *authHandler) refreshTokens(w http.ResponseWriter, r *http.Request) erro
 		return cuserr.ErrGetCookie.WithErr(fmt.Errorf("%s: %w", op, err))
 	}
 
-	accessToken, newRefreshToken, err := h.auth.RefreshTokens(r.Context(), refreshToken.Value)
+	if refreshToken.Value == "" {
+		return cuserr.ErrAuthorizing
+	}
+
+	accessToken, newRefreshToken, user, err := h.auth.RefreshTokens(r.Context(), refreshToken.Value)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	http.SetCookie(w, &http.Cookie{Name: "refresh_token", Value: newRefreshToken, Path: "/", HttpOnly: true, SameSite: http.SameSiteLaxMode})
 	http.SetCookie(w, &http.Cookie{Name: "access_token", Value: accessToken, Path: "/", SameSite: http.SameSiteLaxMode})
+
+	data, err := json.Marshal(user)
+	if err != nil {
+		return cuserr.ErrSerializeData.WithErr(fmt.Errorf("%s: %w", op, err))
+	}
+
+	w.Write(data)
 
 	return nil
 }

@@ -12,7 +12,7 @@ import (
 type (
 	Auth interface {
 		LoginUser(ctx context.Context, OauthToken string) (accessToken string, refreshToken string, user entity.User, err error)
-		RefreshTokens(ctx context.Context, refreshTkn string) (accessToken string, refreshToken string, err error)
+		RefreshTokens(ctx context.Context, refreshTkn string) (accessToken string, refreshToken string, user entity.User, err error)
 		LogoutUser(ctx context.Context, refreshToken string) error
 	}
 

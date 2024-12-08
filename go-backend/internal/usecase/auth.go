@@ -92,43 +92,43 @@ func (a *AuthUseCase) LogoutUser(ctx context.Context, refreshToken string) error
 	return nil
 }
 
-func (a *AuthUseCase) RefreshTokens(ctx context.Context, refreshTkn string) (accessToken string, refreshToken string, err error) {
+func (a *AuthUseCase) RefreshTokens(ctx context.Context, refreshTkn string) (accessToken string, refreshToken string, user entity.User, err error) {
 	logrus.WithField("refresh_token", refreshToken).Debug("refreshing tokens")
 	const op string = "AuthUseCase.RefreshTokens"
 
 	refreshSession, err := a.refreshRepo.GetRefreshSession(ctx, refreshTkn)
 	if err != nil {
-		return "", "", cuserr.SystemError(err, op, "failed to get refresh session")
+		return "", "", entity.User{}, cuserr.SystemError(err, op, "failed to get refresh session")
 	}
 	if refreshSession == (entity.RefreshSession{}) {
-		return "", "", cuserr.ErrInvalidRefreshToken
+		return "", "", entity.User{}, cuserr.ErrInvalidRefreshToken
 	}
 
 	err = a.refreshRepo.DeleteRefreshSessionByToken(ctx, refreshTkn)
 	if err != nil {
-		return "", "", cuserr.SystemError(err, op, "failed to delete refresh session by refresh token")
+		return "", "", entity.User{}, cuserr.SystemError(err, op, "failed to delete refresh session by refresh token")
 	}
 
 	if refreshSession.Expiration.Before(time.Now()) {
-		return "", "", cuserr.ErrTokenExired
+		return "", "", entity.User{}, cuserr.ErrTokenExired
 	}
 
-	user, err := a.userRepo.GetUserByUUID(ctx, refreshSession.UserID)
+	user, err = a.userRepo.GetUserByUUID(ctx, refreshSession.UserID)
 	if err != nil {
-		return "", "", cuserr.SystemError(err, op, "failed to get user")
+		return "", "", entity.User{}, cuserr.SystemError(err, op, "failed to get user")
 	}
 
 	roles, err := a.roleRepo.GetRolesByUserID(ctx, user.ID)
 	if err != nil {
-		return "", "", cuserr.SystemError(err, op, "failed to get user role")
+		return "", "", entity.User{}, cuserr.SystemError(err, op, "failed to get user role")
 	}
 
 	accessToken, refreshToken, err = a.GenerateTokenPair(ctx, user.ID, roles)
 	if err != nil {
-		return "", "", fmt.Errorf("%s: %w", op, err)
+		return "", "", entity.User{}, fmt.Errorf("%s: %w", op, err)
 	}
 
-	return accessToken, refreshToken, nil
+	return accessToken, refreshToken, user, nil
 }
 
 func (a *AuthUseCase) GenerateTokenPair(ctx context.Context, userID string, roles []entity.Role) (accessToken, refreshToken string, err error) {
