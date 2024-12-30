@@ -123,11 +123,7 @@ func (h *authHandler) refreshTokens(w http.ResponseWriter, r *http.Request) erro
 	const op string = "authHandler.refreshTokens"
 
 	refreshToken, err := r.Cookie("refresh_token")
-	if err != nil {
-		return cuserr.ErrGetCookie.WithErr(fmt.Errorf("%s: %w", op, err))
-	}
-
-	if refreshToken.Value == "" {
+	if err != nil || refreshToken.Value == "" {
 		return cuserr.ErrAuthorizing
 	}
 

@@ -39,11 +39,11 @@ type HTTP struct {
 type CORS struct {
 	AllowedMethods     []string `yaml:"allowed_methods" env:"HTTP_CORS_ALLOWED_METHODS" env-required:"true"`
 	AllowedOrigins     []string `yaml:"allowed_origins" env:"HTTP_CORS_ALLOWED_ORIGINS" env-required:"true"`
-	AllowCredentials   bool     `yaml:"allow_credentials" env:"HTTP_CORS_ALLOW_CREDENTIALS" env-required:"true"`
+	AllowCredentials   *bool     `yaml:"allow_credentials" env:"HTTP_CORS_ALLOW_CREDENTIALS" env-required:"true"`
 	AllowedHeaders     []string `yaml:"allowed_headers" env:"HTTP_CORS_ALLOWED_HEADERS" env-required:"true"`
-	OptionsPassthrough bool     `yaml:"options_pass_through" env:"HTTP_CORS_OPTIONS_PASS_THROUGH" env-required:"true"`
+	OptionsPassthrough *bool     `yaml:"options_passthrough" env:"HTTP_CORS_OPTIONS_PASS_THROUGH" env-required:"true"`
 	ExposedHeaders     []string `yaml:"exposed_headers" env:"HTTP_CORS_EXPOSED_HEADERS" env-required:"true"`
-	Debug              bool     `yaml:"debug" env:"HTTP_CORS_DEBUG" env-required:"true"`
+	Debug              *bool     `yaml:"debug" env:"HTTP_CORS_DEBUG" env-required:"true"`
 }
 
 type Auth struct {
@@ -61,8 +61,8 @@ func MustLoad() *Config {
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
 		logrus.Warn("CONFIG_PATH is not set")
-		configPath = "config.yaml"
-		// configPath = "../../config/config.yaml"
+		// configPath = "config.yaml"
+		configPath = "../../config/config.yaml"
 	}
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {

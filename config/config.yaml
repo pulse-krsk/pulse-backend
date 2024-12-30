@@ -6,7 +6,7 @@ auth:
   jwt_sign_key: 'fce9ee13dd03f63e21f86158e7b9cc79079886059d445ce7b0eca9ceceb88c76'
 
 http:
-  host: '0.0.0.0'
+  host: '127.0.0.1'
   port: '8080'
   read_timeout: 5s
   write_timeout: 5s
@@ -14,21 +14,21 @@ http:
   bytes_limit: 1024
   max_memory: 1024000
   cors : 
-    allowed_methods : ["GET", "POST", PATCH, DELETE]
+    allowed_methods : ["GET", "POST", "PATCH", "DELETE", "OPTIONS"]
     allowed_origins : ["http://localhost:3000"]
     allow_credentials : true
-    allowed_headers : ["authorization", "content-type"]
-    options_pass_through : true
+    allowed_headers : ["Authorization", "Content-Type"]
+    options_passthrough : false
     exposed_headers : []
     debug : true
 
 java_service:
-  host: 'backend-java' # 192.168.1.148/backend-java
+  host: 'localhost' # 192.168.1.148/backend-java/localhost
   port: '8081'
 
 postgresql:
   username: 'postgres'
   password: 'postgres'
-  host: 'postgres' # localhost/postgres
+  host: 'localhost' # localhost/postgres
   port: '5432'     # 30000/5432
   database: 'pulsdb'
